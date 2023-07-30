@@ -53,9 +53,8 @@ export const deleteCard = async (req: Request, res: Response) => {
     return res.send(delCard);
   } catch (e) {
     if (
-      e instanceof Error &&
-      (e.message === ErrorMessage.BAD_REQUEST ||
-        e.message === ErrorMessage.CARD_NOT_FOUND)
+      e instanceof Error && (e.message === ErrorMessage.BAD_REQUEST
+      || e.message === ErrorMessage.CARD_NOT_FOUND)
     ) {
       return res.status(HttpStatusCode.NOT_FOUND).send({ message: e.message });
     }
@@ -77,7 +76,7 @@ export const addLike = async (req: ModifiedReq, res: Response) => {
     const likedCard = await Card.findByIdAndUpdate(
       cardId,
       { $addToSet: { likes: userId } },
-      { new: true }
+      { new: true },
     );
 
     if (!likedCard) {
@@ -86,9 +85,9 @@ export const addLike = async (req: ModifiedReq, res: Response) => {
     return res.send(likedCard);
   } catch (e) {
     if (
-      e instanceof Error &&
-      (e.message === ErrorMessage.CARD_NOT_FOUND ||
-        e.message === ErrorMessage.BAD_REQUEST)
+      e instanceof Error
+      && (e.message === ErrorMessage.CARD_NOT_FOUND
+      || e.message === ErrorMessage.BAD_REQUEST)
     ) {
       return res.status(HttpStatusCode.NOT_FOUND).send({ message: e.message });
     }
@@ -110,7 +109,7 @@ export const deleteLike = async (req: ModifiedReq, res: Response) => {
     const likelessCard = await Card.findByIdAndUpdate(
       cardId,
       { $pull: { likes: userId } as any },
-      { new: true }
+      { new: true },
     );
 
     if (!likelessCard) {
@@ -119,9 +118,9 @@ export const deleteLike = async (req: ModifiedReq, res: Response) => {
     return res.send(likelessCard);
   } catch (e) {
     if (
-      e instanceof Error &&
-      (e.message === ErrorMessage.BAD_REQUEST ||
-        e.message === ErrorMessage.CARD_NOT_FOUND)
+      e instanceof Error
+      && (e.message === ErrorMessage.BAD_REQUEST
+      || e.message === ErrorMessage.CARD_NOT_FOUND)
     ) {
       return res.status(HttpStatusCode.NOT_FOUND).send({ message: e.message });
     }
