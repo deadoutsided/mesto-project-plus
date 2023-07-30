@@ -31,8 +31,8 @@ export const getUser = async (req: Request, res: Response) => {
     return res.send(user);
   } catch (e) {
     if (
-      e instanceof Error &&
-      (e.message === ErrorMessage.BAD_REQUEST || ErrorMessage.USER_NOT_FOUND)
+      e instanceof Error
+      && (e.message === ErrorMessage.BAD_REQUEST || ErrorMessage.USER_NOT_FOUND)
     ) {
       return res.status(HttpStatusCode.NOT_FOUND).send({ message: e.message });
     }
@@ -80,7 +80,7 @@ export const changeProfile = async (req: ModifiedReq, res: Response) => {
     const changedUser = await User.findByIdAndUpdate(
       userId,
       { name, about },
-      { new: true }
+      { new: true },
     );
 
     if (!changedUser) {
@@ -90,9 +90,9 @@ export const changeProfile = async (req: ModifiedReq, res: Response) => {
     return res.send(changedUser);
   } catch (e) {
     if (
-      e instanceof Error &&
-      (e.message === ErrorMessage.BAD_REQUEST ||
-        e.message === ErrorMessage.USER_NOT_FOUND)
+      e instanceof Error
+      && (e.message === ErrorMessage.BAD_REQUEST
+      || e.message === ErrorMessage.USER_NOT_FOUND)
     ) {
       return res.status(HttpStatusCode.NOT_FOUND).send({ message: e.message });
     }
@@ -114,7 +114,7 @@ export const changeAvatar = async (req: ModifiedReq, res: Response) => {
     const changedUser = await User.findByIdAndUpdate(
       userId,
       { avatar },
-      { new: true }
+      { new: true },
     );
 
     if (!changedUser) {
@@ -124,8 +124,8 @@ export const changeAvatar = async (req: ModifiedReq, res: Response) => {
     return res.send(changedUser);
   } catch (e) {
     if (
-      e instanceof Error &&
-      (e.message === ErrorMessage.BAD_REQUEST || ErrorMessage.USER_NOT_FOUND)
+      e instanceof Error
+      && (e.message === ErrorMessage.BAD_REQUEST || ErrorMessage.USER_NOT_FOUND)
     ) {
       return res.status(HttpStatusCode.NOT_FOUND).send({ message: e.message });
     }
