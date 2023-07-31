@@ -7,14 +7,9 @@ import { ErrorMessage, HttpStatusCode } from '../types/error';
 
 export const getUsers = async (req: Request, res: Response) => {
   try {
-    const users = await User.find({}).orFail();
+    const users = await User.find({});
     return res.send(users);
   } catch (e) {
-    if (
-      e instanceof monErr.DocumentNotFoundError
-    ) {
-      return res.status(HttpStatusCode.NOT_FOUND).send({ messgae: ErrorMessage.USER_NOT_FOUND });
-    }
     return res
       .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
       .send({ message: ErrorMessage.INTERNAL_SERVER_ERROR });
@@ -29,14 +24,11 @@ export const getUser = async (req: Request, res: Response) => {
 
     return res.send(user);
   } catch (e) {
-    if (
-      e instanceof monErr.DocumentNotFoundError
-      || e instanceof monErr.CastError
-    ) {
-      // no-nested-ternary
-      return e instanceof monErr.DocumentNotFoundError
-        ? res.status(HttpStatusCode.NOT_FOUND).send({ messgae: ErrorMessage.USER_NOT_FOUND })
-        : res.status(HttpStatusCode.BAD_REQUEST).send({ message: ErrorMessage.BAD_REQUEST });
+    if (e instanceof monErr.DocumentNotFoundError) {
+      return res.status(HttpStatusCode.NOT_FOUND).send({ messgae: ErrorMessage.USER_NOT_FOUND });
+    }
+    if (e instanceof monErr.CastError) {
+      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: ErrorMessage.BAD_REQUEST });
     }
     return res
       .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
@@ -57,9 +49,7 @@ export const createUser = async (req: Request, res: Response) => {
 
     return res.send(newUser);
   } catch (e) {
-    if (
-      e instanceof monErr.ValidationError
-    ) {
+    if (e instanceof monErr.ValidationError) {
       return res.status(HttpStatusCode.BAD_REQUEST).send({ message: ErrorMessage.BAD_REQUEST });
     }
     return res
@@ -84,16 +74,11 @@ export const changeProfile = async (req: ModifiedReq, res: Response) => {
 
     return res.send(changedUser);
   } catch (e) {
-    if (
-      e instanceof monErr.DocumentNotFoundError
-      || e instanceof monErr.CastError
-      || e instanceof monErr.ValidationError
-    ) {
-      // eslint-disable-next-line max-len, no-nested-ternary
-      return e instanceof monErr.DocumentNotFoundError ? res.status(HttpStatusCode.NOT_FOUND).send({ messgae: ErrorMessage.USER_NOT_FOUND })
-      // eslint-disable-next-line max-len
-        : e instanceof monErr.CastError ? res.status(HttpStatusCode.NOT_FOUND).send({ message: ErrorMessage.USER_NOT_FOUND })
-          : res.status(HttpStatusCode.BAD_REQUEST).send({ message: ErrorMessage.BAD_REQUEST });
+    if (e instanceof monErr.DocumentNotFoundError) {
+      return res.status(HttpStatusCode.NOT_FOUND).send({ messgae: ErrorMessage.USER_NOT_FOUND });
+    }
+    if (e instanceof monErr.ValidationError) {
+      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: ErrorMessage.BAD_REQUEST });
     }
     return res
       .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
@@ -117,16 +102,11 @@ export const changeAvatar = async (req: ModifiedReq, res: Response) => {
 
     return res.send(changedUser);
   } catch (e) {
-    if (
-      e instanceof monErr.DocumentNotFoundError
-      || e instanceof monErr.CastError
-      || e instanceof monErr.ValidationError
-    ) {
-      // eslint-disable-next-line max-len, no-nested-ternary
-      return e instanceof monErr.DocumentNotFoundError ? res.status(HttpStatusCode.NOT_FOUND).send({ messgae: ErrorMessage.USER_NOT_FOUND })
-      // eslint-disable-next-line max-len
-        : e instanceof monErr.CastError ? res.status(HttpStatusCode.NOT_FOUND).send({ message: ErrorMessage.USER_NOT_FOUND })
-          : res.status(HttpStatusCode.BAD_REQUEST).send({ message: ErrorMessage.BAD_REQUEST });
+    if (e instanceof monErr.DocumentNotFoundError) {
+      return res.status(HttpStatusCode.NOT_FOUND).send({ messgae: ErrorMessage.USER_NOT_FOUND });
+    }
+    if (e instanceof monErr.ValidationError) {
+      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: ErrorMessage.BAD_REQUEST });
     }
     return res
       .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
