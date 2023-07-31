@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { Error as monErr } from 'mongoose';
+import bcrypt from 'bcryptjs';
 import { ModifiedReq } from '../types';
 import User from '../models/user';
 import { ErrorMessage, HttpStatusCode } from '../types/error';
@@ -45,9 +46,14 @@ export const getUser = async (req: Request, res: Response) => {
 
 export const createUser = async (req: Request, res: Response) => {
   try {
-    const { name, about, avatar } = req.body;
-
-    const newUser = await User.create({ name, about, avatar });
+    const
+      {
+        name = undefined, about = undefined, avatar = undefined, email,
+      } = req.body;
+    const password = await bcrypt.hash(req.body.password, 10);
+    const newUser = await User.create({
+      name, about, avatar, email, password,
+    });
 
     return res.send(newUser);
   } catch (e) {
