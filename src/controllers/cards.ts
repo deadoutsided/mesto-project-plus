@@ -33,13 +33,19 @@ export const createCard = async (req: ModifiedReq, res: Response) => {
   }
 };
 
-export const deleteCard = async (req: Request, res: Response) => {
+export const deleteCard = async (req: ModifiedReq, res: Response) => {
   try {
     const { cardId } = req.params;
 
-    const delCard = await Card.findByIdAndDelete(cardId).orFail();
+    const delCard = await Card.findById(cardId).orFail();
 
-    return res.send(delCard);
+    if (delCard.owner.toString() !== req.user?._id) {
+      res.status(HttpStatusCode.UNAUTHORIZED).send({ message: ErrorMessage.UNAUTHORIZED });
+    }
+
+    const deletedCard = await delCard.deleteOne();
+
+    return res.send(deletedCard);
   } catch (e) {
     if (
       e instanceof monErr.DocumentNotFoundError

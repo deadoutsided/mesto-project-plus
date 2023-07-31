@@ -119,12 +119,15 @@ export const login = async (req: ModifiedReq, res: Response) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email }).orFail();
+    const user = await User.findOne({ email }).select('+password').orFail();
     if (!(await bcrypt.compare(password, user.password))) {
       throw new monErr.DocumentNotFoundError(ErrorMessage.UNAUTHORIZED);
     }
     const token = jwt.sign({ _id: user._id }, 'secret-key', { expiresIn: '7d' });
-    return res.send({ token });
+    return res.cookie('jwt', token, {
+      maxAge: 3600000 * 24 * 7,
+      httpOnly: true,
+    }).end();
   } catch (e) {
     if (e instanceof monErr.DocumentNotFoundError) {
       return res.status(HttpStatusCode.UNAUTHORIZED).send({ message: ErrorMessage.UNAUTHORIZED });
