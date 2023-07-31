@@ -2,9 +2,11 @@ import { Schema, model } from 'mongoose';
 import validatorModule from 'validator';
 
 interface IUser {
-  name: string;
-  about: string;
-  avatar: string;
+  name?: string;
+  about?: string;
+  avatar?: string;
+  email: string;
+  password: string;
 }
 
 const userSchema = new Schema({

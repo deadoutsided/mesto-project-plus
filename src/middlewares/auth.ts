@@ -1,13 +1,29 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
 import { ModifiedReq } from '../types';
+import { ErrorMessage, HttpStatusCode } from '../types/error';
 
-const auth = (req: Request, res: Response, next: NextFunction) => {
-  const customReq = req as ModifiedReq;
-  customReq.user = {
-    _id: '64c41ce53cb75a58c7e54d82', // 64c41ce53cb75a58c7e54d82
-  };
+const auth = (req: ModifiedReq, res: Response, next: NextFunction) => {
+  const { authorization } = req.headers;
 
-  next();
+  if (!authorization || !authorization.startsWith('Bearer ')) {
+    return res.status(HttpStatusCode.UNAUTHORIZED)
+      .send({ message: ErrorMessage.UNAUTHORIZED });
+  }
+
+  const token = authorization.replace('Bearer ', '');
+
+  let payload;
+
+  try {
+    payload = jwt.verify(token, 'secret-key') as { _id: string };
+  } catch (e) {
+    return res.status(HttpStatusCode.UNAUTHORIZED).send({ message: ErrorMessage.UNAUTHORIZED });
+  }
+
+  req.user = payload;
+
+  return next();
 };
 
 export default auth;

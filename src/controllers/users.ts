@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { Error as monErr } from 'mongoose';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import { ModifiedReq } from '../types';
 import User from '../models/user';
 import { ErrorMessage, HttpStatusCode } from '../types/error';
@@ -110,6 +111,25 @@ export const changeAvatar = async (req: ModifiedReq, res: Response) => {
     }
     return res
       .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+      .send({ message: ErrorMessage.INTERNAL_SERVER_ERROR });
+  }
+};
+
+export const login = async (req: ModifiedReq, res: Response) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email }).orFail();
+    if (!(await bcrypt.compare(password, user.password))) {
+      throw new monErr.DocumentNotFoundError(ErrorMessage.UNAUTHORIZED);
+    }
+    const token = jwt.sign({ _id: user._id }, 'secret-key', { expiresIn: '7d' });
+    return res.send({ token });
+  } catch (e) {
+    if (e instanceof monErr.DocumentNotFoundError) {
+      return res.status(HttpStatusCode.UNAUTHORIZED).send({ message: ErrorMessage.UNAUTHORIZED });
+    }
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR)
       .send({ message: ErrorMessage.INTERNAL_SERVER_ERROR });
   }
 };
