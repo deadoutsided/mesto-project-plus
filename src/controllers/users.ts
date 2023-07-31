@@ -19,8 +19,7 @@ export const getUsers = async (req: Request, res: Response) => {
 
 export const getUser = async (req: ModifiedReq, res: Response) => {
   try {
-    const id = req.params.id ? req.params.id : req.user?._id;
-
+    const id = req.params.id !== 'me' ? req.params.id : req.user?.token;
     const user = await User.findById(id).orFail();
 
     return res.send(user);
@@ -62,7 +61,7 @@ export const createUser = async (req: Request, res: Response) => {
 export const changeProfile = async (req: ModifiedReq, res: Response) => {
   try {
     const { name, about } = req.body;
-    const userId = req.user?._id;
+    const userId = req.user?.token;
 
     const changedUser = await User.findByIdAndUpdate(
       userId,
@@ -90,7 +89,7 @@ export const changeProfile = async (req: ModifiedReq, res: Response) => {
 export const changeAvatar = async (req: ModifiedReq, res: Response) => {
   try {
     const { avatar } = req.body;
-    const userId = req.user?._id;
+    const userId = req.user?.token;
 
     const changedUser = await User.findByIdAndUpdate(
       userId,

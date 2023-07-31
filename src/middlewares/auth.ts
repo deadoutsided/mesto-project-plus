@@ -22,7 +22,6 @@ const auth = (req: ModifiedReq, res: Response, next: NextFunction) => {
   }
 
   req.user = payload;
-
   return next();
 };
 

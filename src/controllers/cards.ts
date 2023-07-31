@@ -18,7 +18,7 @@ export const getCards = async (req: Request, res: Response) => {
 export const createCard = async (req: ModifiedReq, res: Response) => {
   try {
     const { name, link } = req.body;
-    const owner = req.user?._id;
+    const owner = req.user?.token;
 
     const newCard = await Card.create({ name, link, owner });
 
@@ -39,8 +39,8 @@ export const deleteCard = async (req: ModifiedReq, res: Response) => {
 
     const delCard = await Card.findById(cardId).orFail();
 
-    if (delCard.owner.toString() !== req.user?._id) {
-      res.status(HttpStatusCode.UNAUTHORIZED).send({ message: ErrorMessage.UNAUTHORIZED });
+    if (delCard.owner.toString() !== req.user?.token) {
+      return res.status(HttpStatusCode.FORBIDDEN).send({ message: ErrorMessage.FORBIDDEN });
     }
 
     const deletedCard = await delCard.deleteOne();
@@ -51,7 +51,7 @@ export const deleteCard = async (req: ModifiedReq, res: Response) => {
       e instanceof monErr.DocumentNotFoundError
       || e instanceof monErr.CastError
     ) {
-      return res.status(HttpStatusCode.NOT_FOUND).send({ messgae: ErrorMessage.CARD_NOT_FOUND });
+      return res.status(HttpStatusCode.NOT_FOUND).send({ message: ErrorMessage.CARD_NOT_FOUND });
     }
     return res
       .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
@@ -61,7 +61,7 @@ export const deleteCard = async (req: ModifiedReq, res: Response) => {
 
 export const addLike = async (req: ModifiedReq, res: Response) => {
   try {
-    const userId = req.user?._id;
+    const userId = req.user?.token;
     const { cardId } = req.params;
 
     const likedCard = await Card.findByIdAndUpdate(
@@ -86,7 +86,7 @@ export const addLike = async (req: ModifiedReq, res: Response) => {
 
 export const deleteLike = async (req: ModifiedReq, res: Response) => {
   try {
-    const userId = req.user?._id;
+    const userId = req.user?.token;
     const { cardId } = req.params;
 
     const likelessCard = await Card.findByIdAndUpdate(

@@ -5,6 +5,7 @@ export enum HttpStatusCode{
   NOT_FOUND = 404,
   INTERNAL_SERVER_ERROR = 500,
   UNAUTHORIZED = 401,
+  FORBIDDEN = 403,
 }
 
 export enum ErrorMessage{
@@ -13,5 +14,6 @@ export enum ErrorMessage{
   INTERNAL_SERVER_ERROR = 'Произошла ошибка на стороне сервера',
   BAD_REQUEST = 'Некорректный запрос',
   RESOURCE_NOT_FUOND = 'Такого ресурса не существует',
-  UNAUTHORIZED = 'Неверный логин или пароль',
+  UNAUTHORIZED = 'Необходима авторизация',
+  FORBIDDEN = 'Недостаточно прав',
 }
