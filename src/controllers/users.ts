@@ -17,9 +17,9 @@ export const getUsers = async (req: Request, res: Response) => {
   }
 };
 
-export const getUser = async (req: Request, res: Response) => {
+export const getUser = async (req: ModifiedReq, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id ? req.params.id : req.user?._id;
 
     const user = await User.findById(id).orFail();
 

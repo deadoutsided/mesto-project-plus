@@ -4,11 +4,13 @@ import cardsRoutes from './cards';
 import signinRoute from './signin';
 import signupRoute from './signup';
 import sendNotFoundError from '../controllers/incorrectreq';
+import auth from '../middlewares/auth';
 
 const router = Router();
 
 router.use('/signin', signinRoute);
 router.use('/signup', signupRoute);
+router.use(auth);
 router.use('/users', usersRoutes);
 router.use('/cards', cardsRoutes);
 router.all('*', sendNotFoundError);
