@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { errors } from 'celebrate';
 import usersRoutes from './users';
 import cardsRoutes from './cards';
 import signinRoute from './signin';
@@ -18,6 +19,8 @@ router.use(auth);
 router.use('/users', usersRoutes);
 router.use('/cards', cardsRoutes);
 router.all('*', sendNotFoundError);
+
+router.use(errors());
 
 router.use(errorLogger);
 
