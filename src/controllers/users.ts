@@ -1,42 +1,32 @@
-import { Request, Response } from 'express';
-import { Error as monErr } from 'mongoose';
+import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { ModifiedReq } from '../types';
 import User from '../models/user';
-import { ErrorMessage, HttpStatusCode } from '../types/error';
+import { ErrorMessage } from '../types/error';
+import UnauthorizedError from '../errors/UnauthorizedErr';
 
-export const getUsers = async (req: Request, res: Response) => {
+export const getUsers = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const users = await User.find({});
     return res.send(users);
   } catch (e) {
-    return res
-      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-      .send({ message: ErrorMessage.INTERNAL_SERVER_ERROR });
+    return next(e);
   }
 };
 
-export const getUser = async (req: ModifiedReq, res: Response) => {
+export const getUser = async (req: ModifiedReq, res: Response, next: NextFunction) => {
   try {
     const id = req.params.id !== 'me' ? req.params.id : req.user?.token;
     const user = await User.findById(id).orFail();
 
     return res.send(user);
   } catch (e) {
-    if (e instanceof monErr.DocumentNotFoundError) {
-      return res.status(HttpStatusCode.NOT_FOUND).send({ messgae: ErrorMessage.USER_NOT_FOUND });
-    }
-    if (e instanceof monErr.CastError) {
-      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: ErrorMessage.BAD_REQUEST });
-    }
-    return res
-      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-      .send({ message: ErrorMessage.INTERNAL_SERVER_ERROR });
+    return next(e);
   }
 };
 
-export const createUser = async (req: Request, res: Response) => {
+export const createUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const
       {
@@ -49,16 +39,11 @@ export const createUser = async (req: Request, res: Response) => {
 
     return res.send(newUser);
   } catch (e) {
-    if (e instanceof monErr.ValidationError) {
-      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: ErrorMessage.BAD_REQUEST });
-    }
-    return res
-      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-      .send({ message: ErrorMessage.INTERNAL_SERVER_ERROR });
+    return next(e);
   }
 };
 
-export const changeProfile = async (req: ModifiedReq, res: Response) => {
+export const changeProfile = async (req: ModifiedReq, res: Response, next: NextFunction) => {
   try {
     const { name, about } = req.body;
     const userId = req.user?.token;
@@ -74,19 +59,11 @@ export const changeProfile = async (req: ModifiedReq, res: Response) => {
 
     return res.send(changedUser);
   } catch (e) {
-    if (e instanceof monErr.DocumentNotFoundError) {
-      return res.status(HttpStatusCode.NOT_FOUND).send({ messgae: ErrorMessage.USER_NOT_FOUND });
-    }
-    if (e instanceof monErr.ValidationError) {
-      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: ErrorMessage.BAD_REQUEST });
-    }
-    return res
-      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-      .send({ message: ErrorMessage.INTERNAL_SERVER_ERROR });
+    return next(e);
   }
 };
 
-export const changeAvatar = async (req: ModifiedReq, res: Response) => {
+export const changeAvatar = async (req: ModifiedReq, res: Response, next: NextFunction) => {
   try {
     const { avatar } = req.body;
     const userId = req.user?.token;
@@ -102,25 +79,17 @@ export const changeAvatar = async (req: ModifiedReq, res: Response) => {
 
     return res.send(changedUser);
   } catch (e) {
-    if (e instanceof monErr.DocumentNotFoundError) {
-      return res.status(HttpStatusCode.NOT_FOUND).send({ messgae: ErrorMessage.USER_NOT_FOUND });
-    }
-    if (e instanceof monErr.ValidationError) {
-      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: ErrorMessage.BAD_REQUEST });
-    }
-    return res
-      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-      .send({ message: ErrorMessage.INTERNAL_SERVER_ERROR });
+    return next(e);
   }
 };
 
-export const login = async (req: ModifiedReq, res: Response) => {
+export const login = async (req: ModifiedReq, res: Response, next: NextFunction) => {
   try {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email }).select('+password').orFail();
     if (!(await bcrypt.compare(password, user.password))) {
-      throw new monErr.DocumentNotFoundError(ErrorMessage.UNAUTHORIZED);
+      throw new UnauthorizedError(ErrorMessage.LOGINPASS);
     }
     const token = jwt.sign({ _id: user._id }, 'secret-key', { expiresIn: '7d' });
     return res.cookie('jwt', token, {
@@ -128,10 +97,6 @@ export const login = async (req: ModifiedReq, res: Response) => {
       httpOnly: true,
     }).end();
   } catch (e) {
-    if (e instanceof monErr.DocumentNotFoundError) {
-      return res.status(HttpStatusCode.UNAUTHORIZED).send({ message: ErrorMessage.UNAUTHORIZED });
-    }
-    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-      .send({ message: ErrorMessage.INTERNAL_SERVER_ERROR });
+    return next(e);
   }
 };

@@ -1,14 +1,14 @@
 import { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { ModifiedReq } from '../types';
-import { ErrorMessage, HttpStatusCode } from '../types/error';
+import { ErrorMessage } from '../types/error';
+import UnauthorizedError from '../errors/UnauthorizedErr';
 
 const auth = (req: ModifiedReq, res: Response, next: NextFunction) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    return res.status(HttpStatusCode.UNAUTHORIZED)
-      .send({ message: ErrorMessage.UNAUTHORIZED });
+    throw new UnauthorizedError(ErrorMessage.UNAUTHORIZED);
   }
 
   const token = authorization.replace('Bearer ', '');
@@ -18,7 +18,7 @@ const auth = (req: ModifiedReq, res: Response, next: NextFunction) => {
   try {
     payload = jwt.verify(token, 'secret-key') as { _id: string };
   } catch (e) {
-    return res.status(HttpStatusCode.UNAUTHORIZED).send({ message: ErrorMessage.UNAUTHORIZED });
+    throw new UnauthorizedError(ErrorMessage.UNAUTHORIZED);
   }
 
   req.user = payload;

@@ -6,6 +6,7 @@ export enum HttpStatusCode{
   INTERNAL_SERVER_ERROR = 500,
   UNAUTHORIZED = 401,
   FORBIDDEN = 403,
+  CONFLICT = 409,
 }
 
 export enum ErrorMessage{
@@ -13,7 +14,13 @@ export enum ErrorMessage{
   CARD_NOT_FOUND = 'Карточка не найдена',
   INTERNAL_SERVER_ERROR = 'Произошла ошибка на стороне сервера',
   BAD_REQUEST = 'Некорректный запрос',
-  RESOURCE_NOT_FUOND = 'Такого ресурса не существует',
+  RESOURCE_NOT_FOUND = 'Такого ресурса не существует',
   UNAUTHORIZED = 'Необходима авторизация',
+  LOGINPASS = 'Неверный Логин или пароль',
   FORBIDDEN = 'Недостаточно прав',
+  CONFLICT = 'На этот email уже зарегистрирован пользователь',
+}
+
+export interface ICustomErr extends Error{
+  code?: number;
 }

@@ -1,9 +1,8 @@
-/* eslint-disable arrow-body-style */
-import { Request, Response } from 'express';
-import { HttpStatusCode, ErrorMessage } from '../types/error';
+import { ErrorMessage } from '../types/error';
+import NotFoundError from '../errors/NotFound';
 
-const sendNotFoundError = (req: Request, res: Response) => {
-  return res.status(HttpStatusCode.NOT_FOUND).send({ message: ErrorMessage.RESOURCE_NOT_FUOND });
+const sendNotFoundError = () => {
+  throw new NotFoundError(ErrorMessage.RESOURCE_NOT_FOUND);
 };
 
 export default sendNotFoundError;
