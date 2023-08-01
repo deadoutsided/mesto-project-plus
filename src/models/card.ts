@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import linkRegEx from '../utils/utils';
 
 interface ICard {
   name: string;
@@ -18,6 +19,7 @@ const cardSchema = new Schema({
   link: {
     type: String,
     required: true,
+    match: linkRegEx,
   },
   owner: {
     type: Schema.Types.ObjectId,
