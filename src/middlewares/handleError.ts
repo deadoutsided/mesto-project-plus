@@ -16,12 +16,12 @@ export default (err: ICustomErr, req: Request, res: Response, next: NextFunction
     return res.status(err.code).send({ message: err.message });
   }
 
-  if (err instanceof monErr.ValidationError) {
+  if (err instanceof monErr.ValidationError
+    || err instanceof monErr.CastError) {
     return res.status(HttpStatusCode.BAD_REQUEST).send({ message: ErrorMessage.BAD_REQUEST });
   }
 
-  if (err instanceof monErr.DocumentNotFoundError
-    || err instanceof monErr.CastError) {
+  if (err instanceof monErr.DocumentNotFoundError) {
     return res.status(HttpStatusCode.NOT_FOUND).send({ message: ErrorMessage.RESOURCE_NOT_FOUND });
   }
 
