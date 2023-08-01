@@ -41,11 +41,11 @@ export const deleteCard = async (req: Request, res: Response) => {
 
     return res.send(delCard);
   } catch (e) {
-    if (
-      e instanceof monErr.DocumentNotFoundError
-      || e instanceof monErr.CastError
-    ) {
+    if (e instanceof monErr.DocumentNotFoundError) {
       return res.status(HttpStatusCode.NOT_FOUND).send({ messgae: ErrorMessage.CARD_NOT_FOUND });
+    }
+    if (e instanceof monErr.CastError) {
+      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: ErrorMessage.BAD_REQUEST });
     }
     return res
       .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
@@ -66,11 +66,11 @@ export const addLike = async (req: ModifiedReq, res: Response) => {
 
     return res.send(likedCard);
   } catch (e) {
-    if (
-      e instanceof monErr.DocumentNotFoundError
-      || e instanceof monErr.CastError
-    ) {
+    if (e instanceof monErr.DocumentNotFoundError) {
       return res.status(HttpStatusCode.NOT_FOUND).send({ messgae: ErrorMessage.CARD_NOT_FOUND });
+    }
+    if (e instanceof monErr.CastError) {
+      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: ErrorMessage.BAD_REQUEST });
     }
     return res
       .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
@@ -91,11 +91,11 @@ export const deleteLike = async (req: ModifiedReq, res: Response) => {
 
     return res.send(likelessCard);
   } catch (e) {
-    if (
-      e instanceof monErr.DocumentNotFoundError
-      || e instanceof monErr.CastError
-    ) {
+    if (e instanceof monErr.DocumentNotFoundError) {
       return res.status(HttpStatusCode.NOT_FOUND).send({ messgae: ErrorMessage.CARD_NOT_FOUND });
+    }
+    if (e instanceof monErr.CastError) {
+      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: ErrorMessage.BAD_REQUEST });
     }
     return res
       .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
