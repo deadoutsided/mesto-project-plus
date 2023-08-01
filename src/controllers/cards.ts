@@ -41,6 +41,7 @@ export const deleteCard = async (req: ModifiedReq, res: Response, next: NextFunc
     return res.send(deletedCard);
   } catch (e) {
     return next(e);
+
   }
 };
 
