@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { ModifiedReq } from '../types';
-import User from '../models/user';
+import User, { IUserClient } from '../models/user';
 import { ErrorMessage, HttpStatusCode } from '../types/error';
 import UnauthorizedError from '../errors/UnauthorizedErr';
 
@@ -37,7 +37,7 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
       name, about, avatar, email, password,
     });
 
-    const userRes = newUser.toObject();
+    const userRes: IUserClient = newUser.toObject();
 
     delete userRes.password;
 
