@@ -7,6 +7,14 @@ interface IUser {
   about: string;
   avatar: string;
   email: string;
+  password: string;
+}
+
+export interface IUserClient {
+  name: string;
+  about: string;
+  avatar: string;
+  email: string;
   password?: string;
 }
 

@@ -26,7 +26,7 @@ export const changeProfileValidation = celebrate({
 
 export const changeAvatarValidation = celebrate({
   body: Joi.object({
-    avatar: Joi.string().pattern(linkRegEx),
+    avatar: Joi.string().required().pattern(linkRegEx),
   }),
 });
 
@@ -40,6 +40,6 @@ export const loginValidation = celebrate({
 export const createCardValidation = celebrate({
   body: Joi.object({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().pattern(linkRegEx),
+    link: Joi.string().required().pattern(linkRegEx),
   }),
 });
