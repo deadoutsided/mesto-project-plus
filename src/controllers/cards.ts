@@ -6,7 +6,7 @@ import ForbiddenError from '../errors/Forbidden';
 
 export const getCards = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const cards = await Card.find({}).populate('owner').orFail();
+    const cards = await Card.find({}).populate('owner');
     return res.send(cards);
   } catch (e) {
     return next(e);
@@ -33,7 +33,7 @@ export const deleteCard = async (req: ModifiedReq, res: Response, next: NextFunc
     const delCard = await Card.findById(cardId).orFail();
 
     if (delCard.owner.toString() !== req.user?.token) {
-      throw new ForbiddenError(ErrorMessage.FORBIDDEN);
+      return next(new ForbiddenError(ErrorMessage.FORBIDDEN));
     }
 
     const deletedCard = await delCard.deleteOne();
@@ -41,7 +41,6 @@ export const deleteCard = async (req: ModifiedReq, res: Response, next: NextFunc
     return res.send(deletedCard);
   } catch (e) {
     return next(e);
-
   }
 };
 

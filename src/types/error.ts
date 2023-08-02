@@ -7,6 +7,7 @@ export enum HttpStatusCode{
   UNAUTHORIZED = 401,
   FORBIDDEN = 403,
   CONFLICT = 409,
+  RESOURCE_CREATED = 201,
 }
 
 export enum ErrorMessage{

@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { ModifiedReq } from '../types';
 import User from '../models/user';
-import { ErrorMessage } from '../types/error';
+import { ErrorMessage, HttpStatusCode } from '../types/error';
 import UnauthorizedError from '../errors/UnauthorizedErr';
 
 export const getUsers = async (req: Request, res: Response, next: NextFunction) => {
@@ -37,7 +37,11 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
       name, about, avatar, email, password,
     });
 
-    return res.send(newUser);
+    const userRes = newUser.toObject();
+
+    delete userRes.password;
+
+    return res.status(HttpStatusCode.RESOURCE_CREATED).send(userRes);
   } catch (e) {
     return next(e);
   }
@@ -87,9 +91,9 @@ export const login = async (req: ModifiedReq, res: Response, next: NextFunction)
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email }).select('+password').orFail();
-    if (!(await bcrypt.compare(password, user.password))) {
-      throw new UnauthorizedError(ErrorMessage.LOGINPASS);
+    const user = await User.findOne({ email }).select('+password').orFail(new UnauthorizedError(ErrorMessage.LOGINPASS));
+    if (!(await bcrypt.compare(password, user.password as string))) {
+      return next(new UnauthorizedError(ErrorMessage.LOGINPASS));
     }
     const token = jwt.sign({ _id: user._id }, 'secret-key', { expiresIn: '7d' });
     return res.cookie('jwt', token, {

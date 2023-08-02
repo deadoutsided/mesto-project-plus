@@ -3,7 +3,7 @@ import linkRegEx from '../utils/utils';
 
 export const objectIdValidation = celebrate({
   params: Joi.object({
-    id: Joi.string().hex().length(24),
+    id: Joi.string().required().hex().length(24),
   }),
 });
 
@@ -26,7 +26,7 @@ export const changeProfileValidation = celebrate({
 
 export const changeAvatarValidation = celebrate({
   body: Joi.object({
-    avatar: Joi.string().required(),
+    avatar: Joi.string().pattern(linkRegEx),
   }),
 });
 
