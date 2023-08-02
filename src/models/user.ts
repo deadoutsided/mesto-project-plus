@@ -3,11 +3,11 @@ import validatorModule from 'validator';
 import linkRegEx from '../utils/utils';
 
 interface IUser {
-  name?: string;
-  about?: string;
-  avatar?: string;
+  name: string;
+  about: string;
+  avatar: string;
   email: string;
-  password: string;
+  password?: string;
 }
 
 const userSchema = new Schema({

@@ -8,7 +8,7 @@ const auth = (req: ModifiedReq, res: Response, next: NextFunction) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    throw new UnauthorizedError(ErrorMessage.UNAUTHORIZED);
+    return next(new UnauthorizedError(ErrorMessage.UNAUTHORIZED));
   }
 
   const token = authorization.replace('Bearer ', '');
@@ -18,7 +18,7 @@ const auth = (req: ModifiedReq, res: Response, next: NextFunction) => {
   try {
     payload = jwt.verify(token, 'secret-key') as { _id: string };
   } catch (e) {
-    throw new UnauthorizedError(ErrorMessage.UNAUTHORIZED);
+    return next(new UnauthorizedError(ErrorMessage.UNAUTHORIZED));
   }
 
   req.user = payload;
